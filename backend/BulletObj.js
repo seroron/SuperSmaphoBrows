@@ -45,10 +45,10 @@ BulletObj.prototype = {
         
         // collisionMap
         if(bi.progressRate < 50) {
-            collisionMap.addBulletObj(bi.fromX, bi.fromY, bi.id);
+            collisionMap.addBulletObj(bi.fromX, bi.fromY, bi.id, this);
         } else {
             collisionMap.removeBulletObj(bi.fromX, bi.fromY, bi.id);
-            collisionMap.addBulletObj(bi.toX, bi.toY, bi.id);
+            collisionMap.addBulletObj(bi.toX, bi.toY, bi.id, this);
         }
         
         if(!mapInfo.canEnter(bi.toX, bi.toY)) {

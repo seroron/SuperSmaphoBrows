@@ -5,43 +5,39 @@ var CollisionManager = function() {
 
 CollisionManager.prototype = {
 
-    colBullet2Bullet : function(bulletObj, bulletManager) {
-
+    colBullet2Bullet : function(bulletObj) {
         if(underscore.isEmpty(bulletObj)) {
             return;
         }
 
-        for(var i in bulletObj) {
-            for(var j in bulletObj) {                
-                var bi = bulletManager.getBulletObj(bulletObj[i]);
-                var bj = bulletManager.getBulletObj(bulletObj[j]);
-                if(bulletObj[i] != bulletObj[j] &&
-                   bi.getOwnerName() != bj.getOwnerName()) {
-                    bi.damage(bj.getAttack());
+        var len = bulletObj.length;
+        for(var i=0; i<len-1; ++i) {
+            for(var j=i+1; j<len; ++j) {
+                if(bulletObj[i].getOwnerName() != bulletObj[j].getOwnerName()) {
+                    bulletObj[i].damage(bulletObj[j].getAttack());
+                    bulletObj[j].damage(bulletObj[i].getAttack());
                 }
             }
         }
     },
 
-    colUser2Bullet : function(userObj, bulletObj, userManager, bulletManager) {
-
+    colUser2Bullet : function(userObj, bulletObj, userManager) {
         if(underscore.isEmpty(userObj) || underscore.isEmpty(bulletObj)) {
             return;
         }
 
-        for(var u in userObj) {
-            for(var b in bulletObj) {
-                var bo = bulletManager.getBulletObj(bulletObj[b]);
-                if(userObj[u] != bo.getOwnerName()) {
-                    userManager.damage(userObj[u], bo.getAttack());
-                    if(userManager.getUserObj(userObj[u]).getLife() <= 0) {
-                        userManager.getUserObj(bo.getOwnerName()).userInfo.killCnt++;
-                    }
+        userObj.forEach(function(u) {
+            bulletObj.forEach(function(b) {
+                if(u.getUserName() != b.getOwnerName()) {
+                    u.damage(b.getAttack());
+                    b.damage(u.getAttack());
                     
-                    bulletManager.damage(bulletObj[b], 10); // TODO
+                    if(userManager.getUserObj(u.getUserName()).getLife() <= 0) {
+                        userManager.getUserObj(b.getOwnerName()).userInfo.killCnt++;
+                    }
                 }
-            }
-        }
+            });
+        });
     },
 
     collision : function(userManager, bulletManager, collisionMap, callback) {
@@ -51,7 +47,7 @@ CollisionManager.prototype = {
                 var bulletObj = collisionMap.getBulletObj(x, y);
                 
                 this.colBullet2Bullet(bulletObj, bulletManager);
-                this.colUser2Bullet(userObj, bulletObj, userManager, bulletManager);
+                this.colUser2Bullet(userObj, bulletObj, userManager);
             }
         }
         callback(null, null);

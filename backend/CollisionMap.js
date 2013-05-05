@@ -35,24 +35,23 @@ CollisionMap.prototype = {
     },
 
     /////////////////
-    addObject : function(x, y, type, val) {
-        var obj = {"t" : type, "v" : val};
-
+    addObject : function(x, y, type, key, obj) {
         var findret = underscore.find(this.collisionMap[y][x], 
                                       function(item) {
-                                          return item.t==type && item.v==val
+                                          return item.t==type && item.k==key
                                       });
         if(!findret) {
-	    this.collisionMap[y][x].push(obj);
+	    this.collisionMap[y][x].push({"t" : type, "k" : key, "o" : obj});
         }
 	return this;
     },
 
-    removeObject : function(x, y, type, val) {
-	this.collisionMap[y][x] = this.collisionMap[y][x].filter(
-            function(item){
-                return item.t != type || item.v != val;
+    removeObject : function(x, y, type, key) {
+	this.collisionMap[y][x] = 
+            this.collisionMap[y][x].filter(function(item){
+                return item.t != type || item.k != key;
             });
+        return this;
     },
 
     getObject : function(x, y, type) {
@@ -61,7 +60,7 @@ CollisionMap.prototype = {
 		return item.t == type;
 	    })
 	    .map(function(item) {
-		return item.v;
+		return item.o;
 	    });
     },
 
@@ -70,8 +69,8 @@ CollisionMap.prototype = {
     },
 
     /////////////////    
-    addUserObj : function(x, y, name) {
-	return this.addObject(x, y, TYPE_USER, name);
+    addUserObj : function(x, y, name, obj) {
+	return this.addObject(x, y, TYPE_USER, name, obj);
     },
 
     removeUserObj : function(x, y, name) {
@@ -83,12 +82,12 @@ CollisionMap.prototype = {
     },
 
     /////////////////    
-    addBulletObj : function(x, y, name) {
-	return this.addObject(x, y, TYPE_BULLET, name);
+    addBulletObj : function(x, y, id, obj) {
+	return this.addObject(x, y, TYPE_BULLET, id, obj);
     },
 
-    removeBulletObj : function(x, y, name) {
-	return this.removeObject(x, y, TYPE_BULLET, name);
+    removeBulletObj : function(x, y, id) {
+	return this.removeObject(x, y, TYPE_BULLET, id);
     },
 
     getBulletObj : function(x, y) {

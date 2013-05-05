@@ -22,10 +22,10 @@ UserObj.prototype = {
 
         // collisionMap
         if(ui.progressRate < 50) {
-            collisionMap.addUserObj(ui.fromX, ui.fromY, ui.userName);
+            collisionMap.addUserObj(ui.fromX, ui.fromY, ui.userName, this);
         } else {
             collisionMap.removeUserObj(ui.fromX, ui.fromY, ui.userName);
-            collisionMap.addUserObj(ui.toX, ui.toY, ui.userName);
+            collisionMap.addUserObj(ui.toX, ui.toY, ui.userName, this);
         }
 
 	// input
@@ -131,6 +131,10 @@ UserObj.prototype = {
     damage : function(attack) {        
         this.userInfo.life -= attack;
         return this;
+    },
+
+    getAttack : function() {
+        return 1; //TODO
     },
 
     getLife : function() {
