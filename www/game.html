@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" href="css/devcamp.css">
+<!-- <script src="js/jquery-1.8.3.min.js"></script> -->
+<!-- <script src="js/devcamp.js"></script> -->
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="./js/konalib/public/javascripts/lib/underscore/1.4.4/underscore.js"></script>
+<script type="text/javascript" src="./js/konalib/public/javascripts/lib/adapter.js"></script>
+
+<script type="text/javascript" src="./js/webgl/dh3d/prototype.js"></script>
+<script type="text/javascript" src="./js/webgl/dh3d/scriptaculous/scriptaculous.js"></script>
+<script type="text/javascript" src="./js/webgl/dh3d/DH3DLibrary.js"></script>
+<script type="text/javascript" src="./js/webgl/Game.js"></script>
+<title>大乱闘スマホブラウザーズ</title>
+</head>
+<body>
+<canvas width="768px" height="512px" id="game" style="border:1px solid; float: left;"></canvas>
+<div style="float: left; margin-left: 10px;">
+<form id="joinForm" action="" onsubmit="return false;" style="display: none; width: 180px;">
+ユーザ名：<input id="userName" type="text" value="" /><br />
+キャラクタ：<select id="modelType" name="modelNo">
+</select><br />
+<input type="button" value="ゲームへ参加" onclick="requestJoin();" />
+</form>
+</div>
+<div style="clear: left;"></div>
+<div style="border: 1px solid #000; padding: 5px 5px; margin: 10px 0;">
+<h3>操作方法</h3>
+移動：I、J、K、L キー<br />
+ショット：Z キー<br />
+</div>
+</body>
+</html>

@@ -1,0 +1,138 @@
+/*--------------------------------------------------------------------------------
+ * DH3DLibrary TextureBank.js v0.2.0
+ * Copyright (c) 2010-2012 DarkHorse
+ *
+ * DH3DLibrary is freely distributable under the terms of an MIT-style license.
+ * For details, see the DH3DLibrary web site: http://darkhorse2.0spec.jp/dh3d/
+ *
+ *------------------------------------------------------------------------------*/
+var TextureBank = Class.create({
+  _gl: null,
+  _textures: null,
+
+  initialize: function() {
+    this._textures = $H();
+  },
+
+  setContext: function(gl) {
+    this._gl = gl;
+  },
+
+  getTextureID: function(canvas) {
+    if(!(canvas instanceof HTMLCanvasElement)){
+      return "";
+    }
+    if(!canvas._textureID){
+      var radix = 16;
+      var length = 20;
+      var id = "_";
+      for(var i=0; i<length; i++){
+        var n = Math.floor(Math.random() * radix);
+        id += n.toString(radix);
+      }
+      canvas._textureID = id;
+    }
+    return "CANVAS:" + canvas._textureID;
+  },
+
+  getTexture: function(textureName){
+    var key;
+    if(textureName instanceof HTMLCanvasElement){
+      key = this.getTextureID(textureName);
+    }else{
+      key = textureName;
+    }
+    var texture = this._textures.get(key);
+
+    if(texture == null){
+      texture = this._gl.createTexture();
+      var orgImage = new Image();
+      var texImage;
+      var gl = this._gl;
+      var obj = this;
+
+      var texCallback = function(){
+        //gl.enable(gl.TEXTURE_2D);
+        gl.checkGLError("gl.TEXTURE_2D");
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.checkGLError("gl.bindTexture");
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texImage);
+        gl.checkGLError("gl.texImage2D");
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.checkGLError("gl.texParameteri: MAG_FILTER");
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.checkGLError("gl.texParameteri: MIN_FILTER");
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.checkGLError("gl.texParameteri: WRAP_S");
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.checkGLError("gl.texParameteri: WRAP_T");
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.checkGLError("gl.generateMipmap");
+        gl.bindTexture(gl.TEXTURE_2D, null);
+        gl.checkGLError("gl.bindTexture");
+        //myAlert("error:" + gl.getError());
+      };
+
+      if(textureName instanceof HTMLCanvasElement){
+        texImage = textureName;
+        texCallback();
+      }else{
+        orgImage.onload = function(){
+          gl.checkGLError("before image.onload");
+          texImage = obj._createTextureImage(orgImage, texCallback);
+        }
+        // FIXME: sphere map
+        var ast = textureName.indexOf("*");
+        if(ast > 0){
+          textureName = textureName.substring(0, ast);
+        }
+        orgImage.src = textureName;
+      }
+
+      this._textures.set(key, texture);
+    }
+    return texture;
+  },
+
+  _createTextureImage: function(orgImage, callback){
+    // adjust image width/height to powers of 2
+    var texImage = new Image();
+
+    var orgWidth = (orgImage.width >> 1);
+    var texWidth = 1;
+    while(orgWidth > 0){
+      orgWidth >>= 1;
+      texWidth <<= 1;
+    }
+    var orgHeight = (orgImage.height >> 1);
+    var texHeight = 1;
+    while(orgHeight > 0){
+      orgHeight >>= 1;
+      texHeight <<= 1;
+    }
+
+    // create canvas
+    var texCanvas;
+    var texContext;
+    texCanvas = document.createElement('canvas');
+    texCanvas.width = texWidth;
+    texCanvas.height = texHeight;
+    texContext = texCanvas.getContext("2d");
+
+    // drawImage
+    texContext.drawImage(orgImage, 0, 0, orgImage.width, orgImage.height,
+                                   0, 0, texWidth, texHeight);
+
+    // createImage from canvas data
+    if(callback){
+      texImage.onload = callback;
+    }
+    texImage.src = texCanvas.toDataURL();
+
+    return texImage;
+  },
+
+});
+
+TextureBank = new TextureBank();
+
