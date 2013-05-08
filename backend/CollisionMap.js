@@ -2,6 +2,7 @@ var underscore = require('underscore');
 
 var TYPE_USER   = "user";
 var TYPE_BULLET = "bullet";
+var TYPE_WALL   = "wall";
 
 var CollisionMap = function(sizeX, sizeY) {
     this.collisionMap = [];
@@ -47,10 +48,24 @@ CollisionMap.prototype = {
     },
 
     removeObject : function(x, y, type, key) {
-	this.collisionMap[y][x] = 
+        this.collisionMap[y][x] = 
             this.collisionMap[y][x].filter(function(item){
                 return item.t != type || item.k != key;
             });
+        return this;
+    },
+
+    removeAllObject : function(type) {
+        var cm = this.collisionMap;
+
+        for(var y=0; y<this.sizeY; ++y) {
+            for(var x=0; x<this.sizeX; ++x) {
+                cm[y][x] = cm[y][x].filter(function(item){
+                    return item.t != type;
+                });
+            }
+        }
+
         return this;
     },
 
@@ -66,6 +81,18 @@ CollisionMap.prototype = {
 
     isExistsObject : function(x, y) {
         return !underscore.isEmpty(this.collisionMap[y][x]);
+    },
+
+    getEmptyPoint : function() {
+        // TODO: check full object
+        var x;
+        var y;
+        do {
+            x = underscore.random(this.sizeX-1);
+            y = underscore.random(this.sizeY-1);
+        } while(this.isExistsObject(x, y));
+        
+        return {'x' : x, 'y' : y};
     },
 
     /////////////////    
@@ -92,6 +119,23 @@ CollisionMap.prototype = {
 
     getBulletObj : function(x, y) {
 	return this.getObject(x, y, TYPE_BULLET);
+    },
+
+    /////////////////    
+    addWallObj : function(x, y, id, obj) {
+	return this.addObject(x, y, TYPE_WALL, id, obj);
+    },
+
+    removeAllWallObj : function() {
+        return this.removeAllObject(TYPE_WALL);
+    },
+
+    removeWallObj : function(x, y, id) {
+	return this.removeObject(x, y, TYPE_WALL, id);
+    },
+    
+    getWallObj : function(x, y) {
+	return this.getObject(x, y, TYPE_WALL);
     }
 };
 

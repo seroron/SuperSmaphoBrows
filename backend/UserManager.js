@@ -50,7 +50,7 @@ UserManager.prototype = {
     append : function(userName, cid, type, mapInfo, collisionMap) {
         // TODO check
         
-        var mpos = this.getUserInitPoint(mapInfo, collisionMap);
+        var mpos = collisionMap.getEmptyPoint();
 
         var ui = underscore.clone(INITUSER_DATA); 
         ui.cid      = cid;
@@ -60,18 +60,6 @@ UserManager.prototype = {
         ui.fromY    = ui.toY = mpos.y;
 
         this.users[userName] = new UserObj(ui);
-    },
-
-    getUserInitPoint : function(mapInfo, collisionMap) {
-        var mx;
-        var my;
-        do {
-            mx = underscore.random(1, mapInfo.getSizeX()-2);
-            my = underscore.random(1, mapInfo.getSizeY()-2);
-        } while(!mapInfo.canEnter(mx, my) || 
-                collisionMap.isExistsObject(mx, my));
-        
-        return {'x' : mx, 'y' : my};
     },
 
     move : function(inputManager, mapInfo, bulletManager, collisionMap, callback) {
@@ -90,7 +78,7 @@ UserManager.prototype = {
                 collisionMap.removeUserObj(ui.fromX, ui.fromY, ui.userName);
                 collisionMap.removeUserObj(ui.toX,   ui.toY,   ui.userName);
 
-                var mpos = this.getUserInitPoint(mapInfo, collisionMap);
+                var mpos = collisionMap.getEmptyPoint();
                 ui.toX = ui.fromX = mpos.x;
                 ui.toY = ui.fromY = mpos.y;
 

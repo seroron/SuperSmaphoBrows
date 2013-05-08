@@ -31,7 +31,7 @@ GameManager.prototype = {
             },
             function(c) {
                 this_.collisionMap.reset(20, 20);
-                this_.mapInfo.reset(20, 20, c);
+                this_.mapInfo.reset(20, 20, this_.collisionMap, c);
             }
         ], callback);
     },

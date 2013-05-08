@@ -1,5 +1,7 @@
 var async = require('async');
 
+var WallObj = require('./WallObj');
+
 var WALL = 100;
 var MAPINFO_KEY = 'mapInfo';
 
@@ -28,10 +30,10 @@ MapInfo.prototype = {
         for(var y=0; y<sizeY-2; ++y) {
 	    var line = [WALL];
 	    for(var x=0; x<sizeX-2; ++x) {
-	        if(Math.floor(Math.random()*10) < 8) {
-		    line.push(1); 
+	        if(Math.floor(Math.random()*10) < 2) {
+		    line.push(1); // TODO
 	        } else {
-		    line.push(100); /// wall
+		    line.push(100); /// TODO wall
 	        }
 	    }
 	    line.push(WALL);
@@ -40,9 +42,25 @@ MapInfo.prototype = {
         this.mapData.push(wallLine);
     },
 
-    reset : function(sizeX, sizeY, callback) {
+    updateCollisionMap_ : function(collisionMap) {
+        collisionMap.removeAllWallObj();
+        
+        var md = this.mapData;
+        var wallID = 0;
+        for(var y=0; y<this.sizeY; ++y) {
+            for(var x=0; x<this.sizeX; ++x) {
+                if(md[y][x] >= WALL) {
+                    var w = new WallObj(x, y, wallID++);
+                    collisionMap.addWallObj(x, y, w.getWallID(), w);
+                }
+            }
+        }
+    },
+
+    reset : function(sizeX, sizeY, collisionMap, callback) {
         
         this.createMapData_(sizeX, sizeY);
+        this.updateCollisionMap_(collisionMap);
 
         // update redis db data
         var this_ = this;
