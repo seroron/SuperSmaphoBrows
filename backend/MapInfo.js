@@ -30,7 +30,7 @@ MapInfo.prototype = {
         for(var y=0; y<sizeY-2; ++y) {
 	    var line = [WALL];
 	    for(var x=0; x<sizeX-2; ++x) {
-	        if(Math.floor(Math.random()*10) < 2) {
+	        if(Math.floor(Math.random()*10) < 8) {
 		    line.push(1); // TODO
 	        } else {
 		    line.push(100); /// TODO wall
