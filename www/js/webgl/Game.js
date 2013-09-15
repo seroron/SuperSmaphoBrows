@@ -1,4 +1,4 @@
-DH3DLibrary.loadPackage("game");
+DH3DLibrary.loadPackage("../game");
 
 var canvas;
   var canvasWidth  = 768;
