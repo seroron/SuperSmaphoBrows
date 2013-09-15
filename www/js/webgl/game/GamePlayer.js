@@ -21,7 +21,7 @@ var GamePlayer = Class.create(DH3DObject, {
 
   // FIXME
   _yaxis: new DHVector3(0, 1, 0),
-  _defaultModelType: "gachapin",
+  _defaultModelType: "golem",
 
   initialize: function($super, modelType){
     $super();
@@ -154,7 +154,6 @@ GamePlayer.initialized = false;
 
 // FIXME: model file
 GamePlayer.fileHash = $H({
-  gachapin:   "./model/gachapin.pmd",
   golem:      "./model/etude/golem002/golem002.pmd",
   heavyArmor: "./model/etude/heavy_armor/heavy_armor.pmd",
   knight:     "./model/etude/knight/knight.pmd",
@@ -163,7 +162,6 @@ GamePlayer.fileHash = $H({
   pawn:       "./model/etude/pawn/pawn.pmd",
 });
 GamePlayer.modelName = $H({
-  gachapin:   "恐竜",
   golem:      "ゴーレム",
   heavyArmor: "重装兵",
   knight:     "騎士",
