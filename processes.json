@@ -1,0 +1,11 @@
+[{
+    "name"      : "SSB_backend",
+    "script"    : "./backend/backend_app.js",
+    "instances" : "1",
+    "args"      : "[]"
+},{
+    "name"      : "SSB_connection",
+    "script"    : "./connection/ConnectionManager.js",
+    "instances" : "1",
+    "args"      : "[]"
+}]
