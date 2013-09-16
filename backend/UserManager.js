@@ -4,6 +4,7 @@ var underscore = require('underscore');
 var UserObj = require('./UserObj');
 
 var USEROBJ_KEY = 'userObj';    
+var INVALIDUSER_KEY = "invalidUser";
 
 var INITUSER_DATA = {'cid': -1,
                      'userName': '',
@@ -66,8 +67,19 @@ UserManager.prototype = {
         
 //        console.log("userlist:", this.users);
         
+        var this_ = this;
+
+        async.series([
+            function(c) {
+                this_.treatLogoutRequest_(collisionMap, c);
+            },
+            function(c) {
+                this_.moveUsers_(inputManager, mapInfo, bulletManager, collisionMap, c);
+            }], callback);
+    },
+
+    moveUsers_ : function(inputManager, mapInfo, bulletManager, collisionMap, callback) {
         for(var i in this.users) {
-            
             this.users[i].move(inputManager.getUserInput(this.users[i].getUserName()), 
                                      mapInfo,
                                      bulletManager,
@@ -93,8 +105,7 @@ UserManager.prototype = {
             //     delete this.users[i];
             // }
         }
-
-        callback(null, this);
+        callback(null, null);
     },
 
     save : function(callback) {
@@ -126,6 +137,52 @@ UserManager.prototype = {
         for(var i in this.users) {
             callback(this.users[i]);
         }
+    },
+
+    treatLogoutRequest_ : function(collisionMap, callback) {
+        var this_ = this;
+
+        async.waterfall([
+            function(c) {
+                this_.redisCli.llen(INVALIDUSER_KEY, 
+                                    function(err, res) {
+                                        if(res > 0) {
+                                            c(err, res);
+                                        } else {
+                                            c("nouser", 0);
+                                        }
+                                    });
+            },
+            
+            function(len, c) {
+                this_.redisCli.lrange(INVALIDUSER_KEY, 0, len-1,
+                                      function(err, res) {
+                                          res.forEach(function(userName) {
+                                              console.log("logout user:", userName);
+                                              var user = this_.users[userName];
+                                              if(user) {
+                                                  var ui = user.userInfo;
+                                                  
+                                                  collisionMap.removeUserObj(ui.fromX, ui.fromY, ui.userName);
+                                                  collisionMap.removeUserObj(ui.toX,   ui.toY,   ui.userName);
+                                                  this_.redisCli.hdel(USEROBJ_KEY, ui.userName);
+
+                                                  delete this_.users[userName];
+                                              }
+                                          });
+                                          c(err, len);
+                                      });
+            },
+            
+            function(len, c) {
+                this_.redisCli.ltrim(INVALIDUSER_KEY, len, -1, 
+                                    function(err, res) {
+                                        c(err, res)
+                                    });
+            }
+        ], function(err, res) {
+            callback(null, null);
+        });
     }
 };
 
