@@ -1,6 +1,7 @@
 var redis = require('redis'),
     client = redis.createClient();
 var us = require('underscore');
+var url = require('url');
 
 var mapsid = 0;
 
@@ -47,18 +48,19 @@ var handler = function(req, res) {
   }
 
 };
+
+
 //var app = require('http').createServer(handler);
 var express = require('express');
 var app = express();
-app.use(express.logger());
-app.use(express.static(__dirname + '/../www'));
-var server = require('http').createServer(app);
+var logger  = require('morgan');
+app.use(logger('dev'));
+//app.use(express.static(__dirname + '/../www'));
+var http = require('http').Server(app);
 
 // WebSocket
-var    io = require('socket.io').listen(server);
-server.listen(8800);
-var url = require('url');
-io.set('log level', 1);
+var    io = require('socket.io')(http);
+//io.set('log level', 1);
 
 io.sockets.on('connection', function(socket){
     //var local_cid = cid++;
@@ -104,6 +106,8 @@ io.sockets.on('connection', function(socket){
     	});
     });
 });
+
+io.listen(8888);
 
 var acceptUserCheck = function(){
 	// accept user check

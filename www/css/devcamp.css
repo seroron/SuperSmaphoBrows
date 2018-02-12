@@ -1,0 +1,15 @@
+table#ranking {
+  border: 1px #e3e3e3 solid;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+table#ranking th {
+  border: 1px #e3e3e3 solid;
+  background: #f5f5f5;
+}
+table#ranking td {
+  border: 1px #e3e3e3 solid;
+  background: #ffffff;
+}
+
